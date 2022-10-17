@@ -34,3 +34,21 @@ class Net(nn.Module):
 
 
         return out
+class Conv_AE(nn.Module):
+    def __init__(self,feature_num  ):
+        super(Conv_AE, self).__init__()
+        self.feature_num = 4
+        self.ConvGate1 = nn.Sequential(
+            nn.Conv1d( in_channels = feature_num, out_channels= 3, kernel_size= 3, stride= 2),
+            nn.ReLU(),
+        )
+        self.DeConvGate2 = nn.Sequential(
+            nn.ConvTranspose1d( in_channels = 3 , out_channels= 4, kernel_size=3, stride= 2),
+            nn.ReLU(),
+        )
+
+    def forward(self, x):
+        out = self.ConvGate1(x)
+        out = self.DeConvGate2(out)
+
+        return out

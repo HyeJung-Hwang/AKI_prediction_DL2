@@ -35,15 +35,14 @@ class Net(nn.Module):
 
         return out
 class Conv_AE(nn.Module):
-    def __init__(self,feature_num  ):
+    def __init__(self  ):
         super(Conv_AE, self).__init__()
-        self.feature_num = 4
         self.ConvGate1 = nn.Sequential(
-            nn.Conv1d( in_channels = feature_num, out_channels= 3, kernel_size= 3, stride= 2),
+            nn.Conv1d( in_channels = 4, out_channels= 3, kernel_size= 3, stride= 1),
             nn.ReLU(),
         )
         self.DeConvGate2 = nn.Sequential(
-            nn.ConvTranspose1d( in_channels = 3 , out_channels= 4, kernel_size=3, stride= 2),
+            nn.ConvTranspose1d( in_channels = 3 , out_channels= 4, kernel_size=3, stride= 1),
             nn.ReLU(),
         )
 

@@ -1,26 +1,34 @@
-# Anomaly Detection using Auto Encoder
+# Anomaly Detection using Unsupervised Learning
 
 
 ## Overview
-급성 신손상 환자와 정상인의 생체 데이터를 비교했을 때, 시간에 따라 생체 데이터가 반복되는 패턴이 다르기보다는
-반복되는 패턴 자체는 유사하고 급선 신손상 환자의 생체 데이터에는 outier 가 발생할 것으로 가설을 세우고
-급성 신손상 환자의 ECG 데이터 내부에 실제로 이상치가 존재하는 지 알아보기로 하였다.
+
+interpolation 이나 padding으로 환자 마다 다른 수술 시간에 따른 데이터 크기 차이를 통일하고
+전체를 딥러닝 모델의 input 으로 학습시켜 정상 환자와 급성 신손상 환자를 classification 해보았지만
+정확도가 잘 나오지 않았다. 
+
+그래서 정상 환자와 양성 환자의 전체 수술 중 반복되는 심전도 패턴 모양 자체가 아예 다른게
+아니라 정상 환자와 양성 환자 모두 수술 중 심전도 데이터의 패턴 자체는 유사하지만 양성 환자에게 outlier 가 발생할 것이라고 가설을 세우게 되었다.
+
+가설을 검증하고자 급성 신손상 환자의 심전도 데이터에 이상치가 존재하는 지 딥러닝을 통해 Anomaly Detection을 해보게 되었다.
 
 ## Anomaly Detection using Auto Encoder
-- Auto Encoder 모델은 
+![image](https://user-images.githubusercontent.com/79091824/199703294-d9016426-145e-4cd5-8ccb-25656d51b10b.png)
 
-- 시계열 데이터 예측 모델에 많이 쓰이는 LSTM 모델을 활용했으며, 모델의 정확도 및 결과값을 비교하기 위해 MLP, CNN 모델도 사용하였습니다. 
+- Anomaly Detection에 내가 사용한 모델은  Auto Encoder 이다. Auto Encoder 로 정상 환자의 수술 중 심전도 데이터를 학습시킨 후에 정상환자의 수술 중 심전도 데이터와
+양성 환자의 수술 중 심전도 데이터로 모델을 Test하여 Reconstruction Error 값을 계산하여 비교하였다. 양성 환자의 수술 중 심전도 데이터에 outlier가 있다면,
+정상 환자의 수술 중 심전도 데이터학습한 모델의 input으로 들어갔을 때 Reconstruction Error가 크게 나오는 케이스이가있을 것으로 예상하였다.
 
 
 ## Raw Data
-[vital db](https://vitaldb.net/) 에서 제공하는 환자 데이터셋을 사용했습니다.
+서울대 병원에서 제공하는 환자 데이터셋을 사용하였다.
 
 
 ## Data Preprocess
 
 [vital db examples](https://github.com/vitaldb/examples/blob/master/hypotension_mbp.ipynb) 을 참고하여
-평균 혈압데이터가 65 mmHg 아래인 상태를 hypotension 으로 간주하였고 , 
-20 sec 간의 평균 혈압데이터를 input data , 1분 뒤의 평균 혈압데이터가 65 mmHg인지 유무를 라벨데이터로 데이터셋을 구축하였습니다.
+심전도 데이터를 전처리하여 정상 환자 약 300명의 수술 중 심전도 데이터의 길이가 150인 샘플로 train set을 구축했고
+정상환자 50명, 양성환자 50명의 수술 중 심전도 데이터로 test set을 구축했다.
 
 ![image](https://user-images.githubusercontent.com/79091824/193498449-f12b8e5e-471e-48dc-b511-45b557e13e68.png)
 
@@ -28,31 +36,21 @@
 
 ## Models and Training Details
 
-- MLP
-- LSTM(tensorflow & pytorch) 
-- CNN
-- 3 가지 모델 모두 데이터셋 불균형(hypotension : non hypotension =  1 : 20) 을 해결하기 위해, 1:20으로 training ratio 를 설정하였습니다.
-
+- Auto Encoder
+- Epoch = 50, 
 
 ## Results
 
-|제목|auroc|auprc|acc|f1-score|
-|------|---|---|---|---|
-|mlp|0.79|0.58|0.91|0.57|
-|lstm|0.97|0.77|0.94|0.71|
-|cnn|0.87|0.63|0.94|0.57|
+![image](https://user-images.githubusercontent.com/79091824/199701259-3ded573e-0bb7-4f33-99ef-0ee6d1e9361a.png)
 
-- 모델이 저혈압 발생(positive) 예측을 정확하게 하는 지 평가하는데 효과적인 metric인 auprc score를 주요 성능 비교 지표로 정하였습니다. 
-- lstm 모델(tensorflow)의 auprc score가 0.77로 다른 모델들보다 높아, 저혈압 발생 예측을 가장 정확하게 하였다고 판단했습니다.
+- Reconstruction Error를 계산할 때, 환자마다 각각 수술 중 전체 심전도 데이터에 해당하는 샘플들을 input으로 하여 환자 마다 따로 Reconstruction Error를 계산한 후 
+ 최댓값을 구하여 정상 환자와 양성 환자의 Reconstruction Error 분포를 비교하였다.
+- Reconstruction Error 값 자체르 보면 Auto Encoder 모델의 Train 은 잘 되어, input 시그널과 유사한 시그널이 Ouput으로 나온다고 생각하였다. 그러나
+양성 환자와 정상환자의 Reconstruction Error 값 분포를 비교해본 결과, 두 분포 사이 큰 차이가 없어 내가 세웠던 가설이 틀렸다고 결론을 내리게 되었다.
 
 
-## Applications
-
-Streamlit 라이브러리와 Tensorflow 라이브러리를 이용해 환자의 수술 중 혈압 데이터와 모델 예측 결과를 보여주는 시각화 프로토타입을 제작했습니다. <br>
-
-<img width="600" alt="demo-streamlit" src="https://user-images.githubusercontent.com/79091824/193453626-f0949fe0-faae-4329-b975-7284336d9126.gif">
 
 ## Reference 
-* [Auto Encoder](https://github.com/vitaldb/examples/blob/master/hypotension_mbp.ipynb)
+* [Auto Encoder](https://arxiv.org/pdf/2003.05991.pdf)
 
 

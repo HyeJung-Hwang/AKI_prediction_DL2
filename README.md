@@ -26,13 +26,10 @@ interpolation 이나 padding으로 환자 마다 다른 수술 시간에 따른 
 
 ## Data Preprocess
 
-[vital db examples](https://github.com/vitaldb/examples/blob/master/hypotension_mbp.ipynb) 을 참고하여
+[논문](https://github.com/vitaldb/examples/blob/master/hypotension_mbp.ipynb) 을 참고하여
 심전도 데이터를 전처리하여 정상 환자 약 300명의 수술 중 심전도 데이터의 길이가 150인 샘플로 train set을 구축했고
 정상환자 50명, 양성환자 50명의 수술 중 심전도 데이터로 test set을 구축했다.
 
-![image](https://user-images.githubusercontent.com/79091824/193498449-f12b8e5e-471e-48dc-b511-45b557e13e68.png)
-
-(사진 출처 : [vital db examples](https://github.com/vitaldb/examples/blob/master/hypotension_mbp.ipynb))
 
 ## Models and Training Details
 

@@ -34,7 +34,7 @@ interpolation 이나 padding으로 환자 마다 다른 수술 시간에 따른 
 ## Models and Training Details
 
 - Auto Encoder
-- Epoch = 50, 
+- epoch은 50으로 하였고 optimizer는 Adam 으로 하였다
 
 ## Results
 

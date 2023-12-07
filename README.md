@@ -4,7 +4,7 @@
 ## Overview
 
 interpolation 이나 padding으로 환자 마다 다른 수술 시간에 따른 데이터 크기 차이를 통일하고
-전체를 딥러닝 모델의 input 으로 학습시켜 정상 환자와 급성 신손상 환자를 classification 해보았지만
+전체를 [머신러닝 모델의 input 으로 학습시켜 정상 환자와 급성 신손상 환자를 classification 하는 연구](https://github.com/HyeJung-Hwang/AKI_prediction_ML)를 진행해보았지만
 정확도가 잘 나오지 않았다. 
 
 그래서 정상 환자와 양성 환자의 전체 수술 중 반복되는 심전도 패턴 모양 자체가 아예 다른게
